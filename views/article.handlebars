@@ -1,0 +1,36 @@
+<div class="row">
+    <h1>{{article.title}}</h1>
+    <h5>{{body}}</h5>
+</div>
+<div class="row">
+    <div class="col8">
+        <form action="/comment/article._id" method="POST">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" class="form-control" id="name" aria-describedby="emailHelp" placeholder="Enter email">
+                <label for="comment">Leave a comment...</label>
+                <textarea class="form-control" id="comment" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+    
+</div>
+<div class="row">
+    <div class="col8">
+        <h5>Comments:</h5>
+        {{#if article.comment}}
+        {{#each article.comment}}
+        <div>
+            <p id=nameComment>{{name}}</p>
+            <p>{{body}}</p>
+        </div>
+        {{/each}}
+        {{else}}
+            <p>No comments yet.</p>
+        {{/if}}
+    </div>
+
+</div>
+
+
