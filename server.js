@@ -9,11 +9,10 @@ const axios = require("axios");
 const cheerio = require("cheerio");
 
 // Require all models
-const db = require("./models");
-
-const PORT = 3000;
+//const db = require("./models");
 
 // Initialize Express
+
 const app = express();
 
 // Configure middleware
@@ -24,20 +23,30 @@ app.use(logger("dev"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 // Make public a static folder
-app.use(express.static("public"));
+app.use(express.static("/public"));
 
 // Set Handlebars.
 var exphbs = require("express-handlebars");
-
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
 // Connect to the Mongo DB
 // mongoose.connect("mongodb://localhost/unit18Populater", { useNewUrlParser: true });
 // If deployed, use the deployed database. Otherwise use the local mongoHeadlines database
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/scraped_newsdb";
 
-mongoose.connect(MONGODB_URI);
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
+var db = mongoose.connection;
+
+db.on("error",console.error.bind(console,"connection error:"));
+db.once("open", function(){
+    console.log("Connected to Mongoose!");
+})
+
+
+
+// port setup
+const PORT = process.env.PORT || 3000;
 
 // Routes
 
@@ -75,6 +84,7 @@ app.get("/scrape", function (req, res) {
 
         // Send a message to the client
         res.send("Scrape Complete");
+        console.log("Scrape Complete.");
     });
 });
 
