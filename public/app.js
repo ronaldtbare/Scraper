@@ -8,6 +8,7 @@ $.getJSON("/articles", function(data) {
 });
 
 $(".scrape").on("click",function(){
+  console.log("scrape was clicked.")
   $ajax({
     method: "GET",
     url: "/scrape",

@@ -54,9 +54,9 @@ app.get("/", function(req,res) {
 
 app.get("/scrape", function (req, res) {
     // First, we grab the body of the html with axios
-    request("http://www.nytimes.com/").then(function (error, response, html) {
+    req("http://www.nytimes.com/").then(function (err, res, html) {
         // Then, we load that into cheerio and save it to $ for a shorthand selector
-        let $ = cheerio.load(response.data);
+        let $ = cheerio.load(res.data);
 
         // Now, we grab every h2 within an article tag, and do the following:
         $("article").each(function (i, element) {
