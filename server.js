@@ -30,6 +30,8 @@ var exphbs = require("express-handlebars");
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
+
+
 // Connect to the Mongo DB
 // mongoose.connect("mongodb://localhost/unit18Populater", { useNewUrlParser: true });
 // If deployed, use the deployed database. Otherwise use the local mongoHeadlines database
@@ -46,6 +48,46 @@ db.once("open", function(){
 // port setup
 const PORT = process.env.PORT || 3000;
 
+app.get("/", function(req,res) {
+    res.render("index");
+});
+
+app.get("/scrape", function (req, res) {
+    // First, we grab the body of the html with axios
+    request("http://www.nytimes.com/").then(function (error, response, html) {
+        // Then, we load that into cheerio and save it to $ for a shorthand selector
+        let $ = cheerio.load(response.data);
+
+        // Now, we grab every h2 within an article tag, and do the following:
+        $("article").each(function (i, element) {
+            // Save an empty result object
+            let result = {};
+
+            // Add the text and href of every link, and save them as properties of the result object
+            result.title = $(this)
+                .children("a")
+                .text();
+            result.link = $(this)
+                .children("a")
+                .attr("href");
+
+            // Create a new Article using the `result` object built from scraping
+            db.Article.create(result)
+                .then(function (dbArticle) {
+                    // View the added result in the console
+                    console.log(dbArticle);
+                })
+                .catch(function (err) {
+                    // If an error occurred, log it
+                    console.log(err);
+                });
+        });
+
+        // Send a message to the client
+        res.send("Scrape Complete");
+        console.log("Scrape Complete.");
+    });
+});
 // Route for getting all Articles from the db
 app.get("/articles", function (req, res) {
     // Grab every document in the Articles collection
